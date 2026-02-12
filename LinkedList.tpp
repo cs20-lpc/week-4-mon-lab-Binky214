@@ -56,7 +56,41 @@ void LinkedList<T>::clear() {
 
 template <typename T>
 void LinkedList<T>::copy(const LinkedList<T>& copyObj) {
-    // TODO
+    //don't do anything if you're copying yourself
+    if (this == &copyObj) {
+        return;
+    }
+
+    //clear the current list
+    clear();
+
+    //check if the source list is empty, otherwise skip
+    if (copyObj.head == nullptr) {
+        head = nullptr;
+        this->length = 0;
+        return;
+    }
+
+    //copy the first node
+    head = new Node;
+    head->value = copyObj.head->value;
+    head->next = nullptr;
+
+    Node* currThis = head;
+    Node* currOther = copyObj.head->next;
+
+    //copy next nodes afterwards, will continue until it reaches nullptr
+    while (currOther != nullptr) {
+        currThis->next = new Node;
+        currThis = currThis->next;
+
+        currThis->value = currOther->value;
+        currThis->next = nullptr;
+
+        currOther = currOther->next;
+    }
+
+    this->length = copyObj.length;
 }
 
 template <typename T>
@@ -81,7 +115,35 @@ int LinkedList<T>::getLength() const {
 
 template <typename T>
 void LinkedList<T>::insert(int position, const T& elem) {
-    // TODO
+    if (position < 0 || position >= this->length) {
+        throw string("insert: error, position out of bounds");
+    }
+
+    Node* newNode = new Node;
+    newNode->value = elem;
+    newNode->next = nullptr;
+
+    // inserting at head
+    if (position == 0) {
+        newNode->next = head;
+        head = newNode;
+    } 
+    // inserting anywhere else
+    else {
+        Node* curr = head;
+
+        // go to node before insert position
+        for (int i = 0; i < position - 1; i++) {
+            curr = curr->next;
+        }
+
+        newNode->next = curr->next;
+        curr->next = newNode;
+    }
+
+    this->length++;
+
+
 }
 
 template <typename T>
@@ -91,7 +153,34 @@ bool LinkedList<T>::isEmpty() const {
 
 template <typename T>
 void LinkedList<T>::remove(int position) {
-    // TODO
+    if (position < 0 || position >= this->length) {
+        throw string("remove: error, position out of bounds");
+    }
+
+    Node* temp;
+
+    //remove head if position 0
+    if (position == 0) {
+        temp = head;
+        head = head->next;
+        delete temp;
+    }
+
+    //remove node if anything other than position 0
+    else {
+        Node* curr = head;
+
+        //go to position before removal
+        for (int i = 0; i < position - 1; i++) {
+            curr = curr->next;
+        }
+
+        temp = curr->next;          //deletes node
+        curr->next = temp->next;    
+        delete temp;                //cleanup
+    }
+
+    this->length--;
 }
 
 template <typename T>
